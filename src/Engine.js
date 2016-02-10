@@ -1,13 +1,13 @@
 function print(string) {
-    console.log("StartEngine :: " + string);
+    console.log("RedEngine :: " + string);
 }
 
 function warn(string) {
-    console.warn("StartEngine :: " + string);
+    console.warn("RedEngine :: " + string);
 }
 
 function error(string) {
-    console.error("StartEngine :: " + string);
+    console.error("RedEngine :: " + string);
 }
 
 function Engine(canvasId, canvasWidth, canvasHeight) {
@@ -239,6 +239,7 @@ function Sprite(spritesheet, sx, sy, swidth, sheight) {
     this.spritesheet = spritesheet;
     this.width = spritesheet.width;
     this.height = spritesheet.height;
+
     if(sx != null && sy != null) {
         this.sx = sx;
         this.sy = sy;
@@ -260,6 +261,39 @@ function Sprite(spritesheet, sx, sy, swidth, sheight) {
     };
 }
 
+function Color(r, g, b, a) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a || 1.0;
+
+    this.getHex = function() {
+        return "#" + ("0" + parseInt(this.r, 10).toString(16)).slice(-2) + ("0" + parseInt(this.g, 10).toString(16)).slice(-2) + ("0" + parseInt(this.b, 10).toString(16)).slice(-2);
+    };
+    this.getRGB = function() {
+        return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+    };
+    this.getRGBA = function() {
+        return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+    };
+    this.getInteger = function() {
+        return ((this.r & 0x0ff) << 16) | ((this.g & 0x0ff) << 8) | (this.b & 0x0ff);
+    };
+
+    this.blend = function(color, i) {
+        var r = (this.r + i * (color.r - this.r));
+        var g = (this.g + i * (color.g - this.g));
+        var b = (this.b + i * (color.b - this.b));
+        return new Color(r, g, b, this.a);
+    };
+    this.darken = function(i) {
+        var r = this.r * i;
+        var g = this.g * i;
+        var b = this.b * i;
+        return new Color(r, g, b, this.a);
+    };
+}
+
 function Timer(time) {
     this.current = 0;
     this.time = time;
@@ -272,6 +306,9 @@ function Timer(time) {
     };
     this.update = function() {
         this.current++;
+    };
+    this.forceReady = function() {
+        this.current = this.time + 1;
     };
 }
 
